@@ -28,40 +28,19 @@ strLengthValidation('four', 4);
 
 const randomArrElement = (array) => array[rndInteger(0, array.length - 1)];
 
-// Функция генерации неповторяющегося id из диапазона [min, max]
-
-function createRandomIdFromRndInteger (min, max) {
-  const previousValues = [];
-
-  return function () {
-    let currentValue = rndInteger(min, max);
-    if (previousValues.length >= (max - min + 1)) {
-      console.error('Перебраны все числа из диапазона от ' + min + ' до ' + max); // иначе подвесит браузер вечным циклом
-      return null;
-    }
-    while (previousValues.includes(currentValue)) {
-      currentValue = rndInteger(min, max);
-    }
-    previousValues.push(currentValue);
-    return currentValue;
-  };
-}
-
 // объект массива — фотография
 
-const photoIndex = createRandomIdFromRndInteger(PHOTOS_QTY.min, PHOTOS_QTY.max);
-
-const createdPhoto = () => ({
-  id: photoIndex(),
-  url: `photos/${photoIndex()}.jpg`,
+const createdPhoto = (index) => ({
+  id: index,
+  url: `photos/${index}.jpg`,
   description: randomArrElement(DESCRIPTION),
   likes: rndInteger(LIKES_QTY.min, LIKES_QTY.max),
   comments: rndInteger(COMMENTS_QTY.min, COMMENTS_QTY.max),
 });
 
 const getPhotos = () =>
-  Array.from({ length: PHOTOS_QTY.max }, (_, photosIndex) =>
-    createdPhoto(photosIndex + 1)
+  Array.from({ length: PHOTOS_QTY.max }, (_, photoIndex) =>
+    createdPhoto(photoIndex + 1)
   );
 
 getPhotos();
