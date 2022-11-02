@@ -17,4 +17,8 @@ const strLengthValidation = (string, length) => string.length <= length;
 //Функция возвразающая рандомный элемента массива
 const randomArrElement = (array) => array[rndInteger(0, array.length - 1)];
 
-export {rndInteger, strLengthValidation, randomArrElement};
+// Функция проверки нажатия esc
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
+export {rndInteger, strLengthValidation, randomArrElement, isEscapeKey};
+
