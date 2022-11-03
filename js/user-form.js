@@ -1,3 +1,5 @@
+//Валидация формы загрузки фотографии
+
 import {isEscapeKey} from './util.js';
 
 const userForm = document.querySelector('.img-upload__form');
