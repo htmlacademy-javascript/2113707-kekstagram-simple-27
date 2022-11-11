@@ -1,21 +1,25 @@
-// модуль отвечает за отрисовку миниатюр
-import {getPhotos} from './data.js';
+import { getData } from './api.js';
+import { alertMessage } from './alerts.js';
 
-const usersPictures = document.querySelector('.pictures');
+const usersPicturesElement = document.querySelector('.pictures');
 const usersPicturesTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
-const pictureFragment = document.createDocumentFragment(); // Fragment
+const renderSimilarPictures = (pictures) => {
 
-getPhotos.forEach(({url, description, likes, comments}) => {
-  const picture = usersPicturesTemplate.cloneNode(true);
-  picture.querySelector('.picture__img').src = url;
-  picture.querySelector('.picture__img').alt = description;
-  picture.querySelector('.picture__likes').textContent = likes;
-  picture.querySelector('.picture__comments').textContent = comments;
+  const pictureFragment = document.createDocumentFragment(); // Fragment
 
-  pictureFragment.appendChild(picture);
+  pictures.forEach(({url, likes, comments}) => {
+    const picture = usersPicturesTemplate.cloneNode(true);
+    picture.querySelector('.picture__img').src = url;
+    picture.querySelector('.picture__likes').textContent = likes;
+    picture.querySelector('.picture__comments').textContent = comments;
 
-  return picture;
-});
+    pictureFragment.appendChild(picture);
 
-usersPictures.appendChild(pictureFragment); //Fragment
+    return picture;
+  });
+
+  usersPicturesElement.appendChild(pictureFragment); //Fragment
+};
+
+getData(renderSimilarPictures, alertMessage);
