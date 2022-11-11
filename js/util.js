@@ -20,5 +20,4 @@ const randomArrElement = (array) => array[rndInteger(0, array.length - 1)];
 // Функция проверки нажатия esc
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-export {rndInteger, strLengthValidation, randomArrElement, isEscapeKey};
-
+export { rndInteger, strLengthValidation, randomArrElement, isEscapeKey };

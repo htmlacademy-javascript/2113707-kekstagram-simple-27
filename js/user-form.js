@@ -1,13 +1,29 @@
 import { isEscapeKey } from './util.js';
 import { resetScale } from './user-picture-scale.js';
 import { resetEffects } from './user-picture-effects.js';
+import { sendData } from './api.js';
+import { showAlert } from './alerts.js';
 
-const userForm = document.querySelector('.img-upload__form');
-const imgUploadOverlay = document.querySelector('.img-upload__overlay');
-const uploadFile = document.querySelector('#upload-file');
-const closeButton = document.querySelector('#upload-cancel');
+const userFormElement = document.querySelector('.img-upload__form');
+const imgUploadOverlayElement = document.querySelector('.img-upload__overlay');
+const uploadFileElement = document.querySelector('#upload-file');
+const closeButtonElement = document.querySelector('#upload-cancel');
+const uploadButtonElement = document.querySelector('#upload-submit');
 
-const pristine = new Pristine(userForm,
+//Блокировка кнопки отправки формы
+const blockSubmitButton = () => {
+  uploadButtonElement.disabled = true;
+  uploadButtonElement.textContent = 'Идет отправка...';
+};
+
+//Разблокировка кнопки отправки формы
+const unblockSubmitButton = () => {
+  uploadButtonElement.disabled = false;
+  uploadButtonElement.textContent = 'Опубликовать';
+};
+
+//Пристин экземпляр
+const pristine = new Pristine(userFormElement,
   {
     classTo: 'img-upload__text',
     errorTextParent: 'img-upload__text',
@@ -15,20 +31,24 @@ const pristine = new Pristine(userForm,
   true
 );
 
+//Показать модальное окно
 const showModal = () => {
-  imgUploadOverlay.classList.remove('hidden');
+  imgUploadOverlayElement.classList.remove('hidden');
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onEscapeKey);
+  userFormElement.addEventListener('submit', onFormSubmitButton);
 };
 
+//Закрыть модальное окно
 const hideModal = () => {
-  userForm.reset();
+  userFormElement.reset();
   resetScale();
   resetEffects();
   pristine.reset();
-  imgUploadOverlay.classList.add('hidden');
+  imgUploadOverlayElement.classList.add('hidden');
   document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', onEscapeKey);
+  userFormElement.removeEventListener('submit', onFormSubmitButton);
 };
 
 function onEscapeKey(evt) {
@@ -38,16 +58,43 @@ function onEscapeKey(evt) {
   }
 }
 
-uploadFile.addEventListener('change', () => {
+// Listners
+uploadFileElement.addEventListener('change', () => {
   showModal();
 });
 
-closeButton.addEventListener('click', () => {
+closeButtonElement.addEventListener('click', () => {
   hideModal();
 });
 
-userForm.addEventListener('submit', (evt) => {
+userFormElement.addEventListener('submit', (evt) => {
   if (!pristine.validate()) {
     evt.preventDefault();
   }
 });
+
+// Действия при нажатии на кнопку отправки формы
+function onFormSubmitButton (evt) {
+  evt.preventDefault();
+
+  const isValid = pristine.validate();
+
+  if (isValid) {
+    blockSubmitButton();
+    const formData = new FormData(evt.target);
+    sendData(
+      () => {
+        hideModal();
+        showAlert('success');
+        unblockSubmitButton();
+      },
+      () => {
+        showAlert('error');
+        unblockSubmitButton();
+      },
+      formData
+    );
+  }
+}
+
+export { onFormSubmitButton };
